@@ -28,6 +28,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
+                Surface(modifier=Modifier.fillMaxSize(),
+                    color=Color.White){
+
                 var result by remember { mutableStateOf(1) }
                 val imageResource=when(result){
                     1->R.drawable.wheel_200
@@ -47,24 +50,36 @@ class MainActivity : ComponentActivity() {
                         ), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top)
                 {
-                    Text(text = "Wheel of Fortune",
+                    Text(
+                        text = "Wheel of Fortune",
                         textAlign = TextAlign.Center,
-                        fontSize = 40.sp, fontFamily = FontFamily.Cursive)
-                    Surface(modifier = Modifier
-                        .height(500.dp)
-                        .width(200.dp)){
+                        fontSize = 40.sp, fontFamily = FontFamily.Cursive
+                    )
+                    Surface(
+                        modifier = Modifier
+                            .height(500.dp)
+                            .width(200.dp)
+                    ) {
                         Image(painter = painterResource(imageResource), contentDescription = "1")
 
                     }
 
 
-                    Button(onClick = { result= (1..5).random()}, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red,
-                        contentColor = Color.White)) {
-                        Text(text="Spin the Wheel",
+                    Button(
+                        onClick = { result = (1..5).random() },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.Black,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "Spin the Wheel",
                             fontFamily = FontFamily.Cursive,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp)
+                            fontSize = 25.sp
+                        )
                     }
+                }
                 }
             }
         }
@@ -105,7 +120,7 @@ fun DefaultPreview() {
             }
 
 
-            Button(onClick = { result= (1..5).random()}, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red,
+            Button(onClick = { result= (1..5).random()}, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
                 contentColor = Color.White)) {
                 Text(text="Spin the Wheel",
                     fontFamily = FontFamily.Cursive,
