@@ -111,7 +111,7 @@ fun DefaultPreview() {
         {
             Text(text = "Wheel of Fortune",
                 textAlign = TextAlign.Center,
-            fontSize = 40.sp, fontFamily = FontFamily.Cursive)
+            fontSize = 60.sp, fontFamily = FontFamily.Cursive)
             Surface(modifier = Modifier
                 .height(500.dp)
                 .width(200.dp)){
@@ -133,18 +133,5 @@ fun DefaultPreview() {
     }
 }
 
-@Composable
-fun ButtonRed(text: String){
-    Button(onClick = {/*TODO*/}, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red,
-        contentColor = Color.White)) {
-        Text(text=text,
-            fontFamily = FontFamily.Cursive,
-            fontWeight = FontWeight.Bold,
-        fontSize = 25.sp)
-    }}
 
-@Composable
-fun Wheel(){
-    var result by remember { mutableStateOf(1)}
-    Image(painter = painterResource(id = R.drawable.wheel_200), contentDescription = "1")
-}
+
