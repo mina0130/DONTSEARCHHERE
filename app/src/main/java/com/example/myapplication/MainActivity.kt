@@ -25,50 +25,80 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
+    val viewModel = WheelOfFortuneViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                WheelOfFortune()
+                WheelOfFortuneApp(viewModel)
             }
         }
     }
 }
+@Composable
+fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
+    MyApplicationTheme {
+        val startRoute = "start"
+        val guessRoute = "guess"
+        val navigationController = rememberNavController()
+        val state = viewModel.uiState.collectAsState()
+        NavHost(navController = navigationController,
+            modifier = Modifier.fillMaxSize(),
+            startDestination = startRoute
+        ) {
+            composable(route = startRoute) {
 
+
+                WheelOfFortune(state = state.value, 
+                    spinWheelFunction = {
+                        viewModel.spinWheel()
+                      
+                    }, navigateFunction = { navigationController.navigate(guessRoute)})
+            }
+            
+            composable(route = guessRoute) {
+                Text(text = "Hello")
+            }
+        }
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val viewModel = WheelOfFortuneViewModel()
     MyApplicationTheme {
-        WheelOfFortune()
+        WheelOfFortune(viewModel.uiState.collectAsState().value,
+            spinWheelFunction = {viewModel.spinWheel()},
+            navigateFunction = {})
     }
 }
 
+@Preview
+@Composable
+fun GuessPreview(){
+    TitleText(text = "Guess the Word")
+    Spacer(modifier=Modifier.height(20.dp))
 
+}
 
 @Composable
-fun WheelOfFortune(){
-    var result by remember { mutableStateOf(1) }
-    val imageResource=when(result){
-        1->R.drawable.wheel_200
-        2->R.drawable.wheel_100
-        3-> R.drawable.wheel_400
-        4->R.drawable.wheel_1000
-        5->R.drawable.wheel_500
-        else -> R.drawable.wheel_bankrupt
-    }
-    var displayText: String
-    when(result){
-        1-> displayText="$200"
-        2-> displayText="$100"
-        3->displayText="$400"
-        4->displayText="$1000"
-        5->displayText="$500"
-        else->displayText="Bankrupt"}
+fun keyBoard(){
 
+}
 
+@Composable
+fun keyBoardButton(){
+    //Button()
+}
+@Composable
+fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
+navigateFunction: ()-> Unit){
     Column(
         Modifier
             .fillMaxSize()
@@ -79,115 +109,69 @@ fun WheelOfFortune(){
             ), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top)
     {
-        Text(text = "Wheel of Fortune",
-            textAlign = TextAlign.Center,
-            fontSize = 60.sp, fontFamily = FontFamily.Cursive)
+        TitleText("Wheel of Fortune")
         Spacer(modifier = Modifier.height(30.dp))
-        Surface(modifier = Modifier
-            .height(300.dp)
-            .width(300.dp)){
-            Image(painter = painterResource(imageResource),
-                contentDescription = result.toString(),
-                contentScale = ContentScale.FillWidth)
-        }
+        Wheel(image = state.wheelImage)
         Spacer(modifier = Modifier.height(30.dp))
-        Text(text = displayText,
+        Text(text = state.wheelResult,
             textAlign = TextAlign.Center,
             fontSize = 30.sp, fontFamily = FontFamily.SansSerif)
-        Spacer(modifier = Modifier.height(70.dp))
 
-        Spacer(modifier = Modifier.height(30.dp))
+        SpinButton(onClick = spinWheelFunction, enabled = state.spinnable)
+if(!state.spinnable){
+    Spacer(modifier=Modifier.height(10.dp))
+    NextButton(onClick = navigateFunction)
+}
 
-        Button(onClick = { result= (1..5).random()},
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
-                contentColor = Color.White),
-            enabled=true) {
-            Text(text="Spin the Wheel",
-                fontFamily = FontFamily.Cursive,
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp)
-        }
+    }
+}
+@Composable
+fun TitleText(text: String){
+    Text(text = text,
+        textAlign = TextAlign.Center,
+        fontSize = 60.sp, fontFamily = FontFamily.Cursive)
+}
+
+
+@Composable
+fun Wheel(image : Int) {
+    Surface(modifier = Modifier
+        .height(300.dp)
+        .width(300.dp)){
+        Image(painter = painterResource(image),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth)
     }
 }
 
-        /*
-                        var result by remember { mutableStateOf(1) }
-                val imageResource=when(result){
-                    1->R.drawable.wheel_200
-                    2->R.drawable.wheel_100
-                    3-> R.drawable.wheel_400
-                    4->R.drawable.wheel_1000
-                    5->R.drawable.wheel_500
-                    else -> R.drawable.wheel_bankrupt
-                }
-                var displayText: String by remember {
-                    mutableStateOf("")
-                }
-            when(result){
-                    1-> displayText="$200"
-                    2-> displayText="$100"
-                    3->displayText="$400"
-                    4->displayText="$1000"
-                    5->displayText="$500"
-                    else->displayText="Bankrupt"}
+@Composable
+fun SpinButton(onClick: () -> Unit, enabled: Boolean) {
+    Button(onClick = onClick,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
+            contentColor = Color.White),
+        enabled = enabled) {
+        Text(text="Spin the Wheel",
+            fontFamily = FontFamily.Cursive,
+            fontWeight = FontWeight.Bold,
+            fontSize = 25.sp)
+    }
+}
 
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .absolutePadding(
-                            10.dp,
-                            100.dp,
-                            10.dp, 0.dp
-                        ), horizontalAlignment = CenterHorizontally,
-                    verticalArrangement = Arrangement.Top)
-                {
-                    Text(text = "Wheel of Fortune",
-                        textAlign = TextAlign.Center,
-                        fontSize = 60.sp, fontFamily = FontFamily.Cursive)
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Surface(modifier = Modifier
-                        .height(300.dp)
-                        .width(300.dp)){
-                        Image(painter = painterResource(imageResource),
-                            contentDescription = result.toString(),
-                            contentScale = ContentScale.FillWidth)
-                    }
-                    Spacer(modifier = Modifier.height(30.dp))
-                    Text(text = displayText,
-                        textAlign = TextAlign.Center,
-                        fontSize = 30.sp, fontFamily = FontFamily.SansSerif)
-                    Spacer(modifier = Modifier.height(70.dp))
-                    Spacer(modifier = Modifier.height(30.dp))
+@Composable
+fun NextButton(onClick: () -> Unit){
+    Button(onClick=onClick,
+    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
+        contentColor = Color.White),
+    ) {
+        Text(text="Start Guessing",
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive,
+            fontSize = 20.sp)
+    }
+}
+@Composable
+fun GuessTheWord(state: GuessStateUI){
+TitleText(text = "Guess the Word")
 
-                   var flag=true
-                   Button(onClick = { flag=false},
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
-                            contentColor = Color.White), enabled=flag) {
-                        Text(text="Spin the Wheel",
-                            fontFamily = FontFamily.Cursive,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp)
-                    }
-                    if(flag==false){
-                        result= (1..5).random()
-                        startActivity(intent)
-                    }
-                }
-            }
-        }
-        val intent=Intent(this, GuessActivity::class.java)
-        @Composable
-        fun SpinButton(){
-            var flag=true
-         Button(onClick = {flag=false },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
-                    contentColor = Color.White), enabled=flag) {
-                Text(text="Spin the Wheel",
-                    fontFamily = FontFamily.Cursive,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp)
-            }
-
-        }
-        * */
+}
 
