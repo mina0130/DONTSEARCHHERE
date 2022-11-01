@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -25,10 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.graphics.toColorInt
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import org.w3c.dom.Text
 
 class MainActivity : ComponentActivity() {
     val viewModel = WheelOfFortuneViewModel()
@@ -63,7 +66,16 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
             }
             
             composable(route = guessRoute) {
-                Text(text = "Hello")
+                Surface(modifier = Modifier.fillMaxSize()){
+                    Color.White
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        TitleText(text = "Guess the Word")
+                        Spacer(modifier = Modifier.height(500.dp))
+                        keyBoard()
+
+                    }
+                }
             }
         }
     }
@@ -82,19 +94,65 @@ fun DefaultPreview() {
 @Preview
 @Composable
 fun GuessPreview(){
-    TitleText(text = "Guess the Word")
-    Spacer(modifier=Modifier.height(20.dp))
+    Surface(modifier = Modifier.fillMaxSize()){
+        Color.White
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(70.dp))
+            TitleText(text = "Guess the Word")
+            Spacer(modifier = Modifier.height(500.dp))
+            keyBoard()
+
+        }
+    }
+
 
 }
 
 @Composable
 fun keyBoard(){
-
+    Column(horizontalAlignment = CenterHorizontally) {
+        Row(horizontalArrangement = Arrangement.Center) {
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "A")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "B")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "C")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "D")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "E")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "F")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "G")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "H")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "I")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "J")
+        }
+        Row() {
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "K")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "L")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "M")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "N")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "O")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "P")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "Q")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "R")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "S")
+        }
+        Row(){
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "T")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "U")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "V")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "W")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "X")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "Y")
+            keyBoardButton(onClick = { /*TODO*/ }, enabled = true, text = "Z")
+        }
+    }
 }
 
 @Composable
-fun keyBoardButton(){
-    //Button()
+fun keyBoardButton(onClick: () -> Unit, enabled: Boolean, text: String){
+    Button(modifier=Modifier.width(33.dp), onClick=onClick, enabled=enabled,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta)){
+        Text(text = text, textAlign = TextAlign.Center)
+    }
+    Spacer(modifier = Modifier.width(3.dp))
 }
 @Composable
 fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
@@ -118,10 +176,15 @@ navigateFunction: ()-> Unit){
             fontSize = 30.sp, fontFamily = FontFamily.SansSerif)
 
         SpinButton(onClick = spinWheelFunction, enabled = state.spinnable)
-if(!state.spinnable){
+        var enabled = false
+        if(!state.spinnable){
+            enabled=true }
+        if(state.spinnable){
+            enabled=false
+        }
     Spacer(modifier=Modifier.height(10.dp))
-    NextButton(onClick = navigateFunction)
-}
+    NextButton(onClick = navigateFunction, enabled)
+
 
     }
 }
@@ -158,8 +221,8 @@ fun SpinButton(onClick: () -> Unit, enabled: Boolean) {
 }
 
 @Composable
-fun NextButton(onClick: () -> Unit){
-    Button(onClick=onClick,
+fun NextButton(onClick: () -> Unit, enabled: Boolean){
+    Button(onClick=onClick, enabled=enabled,
     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
         contentColor = Color.White),
     ) {
@@ -169,9 +232,5 @@ fun NextButton(onClick: () -> Unit){
             fontSize = 20.sp)
     }
 }
-@Composable
-fun GuessTheWord(state: GuessStateUI){
-TitleText(text = "Guess the Word")
 
-}
 
