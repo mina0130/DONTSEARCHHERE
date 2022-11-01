@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -99,7 +100,15 @@ fun GuessPreview(){
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(70.dp))
             TitleText(text = "Guess the Word")
-            Spacer(modifier = Modifier.height(500.dp))
+            Spacer(modifier = Modifier.height(70.dp))
+           WordProgressText(text = "______")
+            Spacer(modifier = Modifier.height(100.dp))
+            val currentText = remember {
+                mutableStateOf(TextFieldValue())
+            }
+            TextField(value = currentText.value,
+                onValueChange = {currentText.value=it})
+            Spacer(modifier = Modifier.height(150.dp))
             keyBoard()
 
         }
@@ -146,6 +155,12 @@ fun keyBoard(){
     }
 }
 
+@Composable
+fun WordProgressText(text: String){
+    Text(text = text,
+        textAlign = TextAlign.Center,
+        fontSize = 60.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+}
 @Composable
 fun keyBoardButton(onClick: () -> Unit, enabled: Boolean, text: String){
     Button(modifier=Modifier.width(33.dp), onClick=onClick, enabled=enabled,
