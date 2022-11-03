@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -57,26 +58,14 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
             startDestination = startRoute
         ) {
             composable(route = startRoute) {
-
-
                 WheelOfFortune(state = state.value, 
                     spinWheelFunction = {
                         viewModel.spinWheel()
                       
                     }, navigateFunction = { navigationController.navigate(guessRoute)})
             }
-            
             composable(route = guessRoute) {
-                Surface(modifier = Modifier.fillMaxSize()){
-                    Color.White
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        TitleText(text = "Guess the Word")
-                        Spacer(modifier = Modifier.height(500.dp))
-                        keyBoard()
-
-                    }
-                }
+                Guessing(state = GuessStateUI())
             }
         }
     }
@@ -87,7 +76,7 @@ fun DefaultPreview() {
     val viewModel = WheelOfFortuneViewModel()
     MyApplicationTheme {
         WheelOfFortune(viewModel.uiState.collectAsState().value,
-            spinWheelFunction = {viewModel.spinWheel()},
+            spinWheelFunction = { viewModel.spinWheel() },
             navigateFunction = {})
     }
 }
@@ -115,6 +104,32 @@ fun GuessPreview(){
     }
 
 
+}
+
+@Composable
+fun Guessing(state: GuessStateUI){
+    Surface(modifier = Modifier.fillMaxSize()){
+        Color.White
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(70.dp))
+            TitleText(text = "Guess the Word")
+            Spacer(modifier = Modifier.height(70.dp))
+            if(!state.started){
+
+            }
+            if(state.started){
+            WordProgressText(text = state.wordProgress) }
+            Spacer(modifier = Modifier.height(100.dp))
+            val currentText = remember {
+                mutableStateOf(TextFieldValue())
+            }
+            TextField(value = currentText.value,
+                onValueChange = {currentText.value=it})
+            Spacer(modifier = Modifier.height(150.dp))
+            keyBoard()
+
+        }
+    }
 }
 
 @Composable
@@ -159,7 +174,7 @@ fun keyBoard(){
 fun WordProgressText(text: String){
     Text(text = text,
         textAlign = TextAlign.Center,
-        fontSize = 60.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
+        fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
 }
 @Composable
 fun keyBoardButton(onClick: () -> Unit, enabled: Boolean, text: String){
@@ -185,7 +200,7 @@ navigateFunction: ()-> Unit){
         TitleText("Wheel of Fortune")
         Spacer(modifier = Modifier.height(30.dp))
         Wheel(image = state.wheelImage)
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(50.dp))
         Text(text = state.wheelResult,
             textAlign = TextAlign.Center,
             fontSize = 30.sp, fontFamily = FontFamily.SansSerif)
@@ -242,6 +257,19 @@ fun NextButton(onClick: () -> Unit, enabled: Boolean){
         contentColor = Color.White),
     ) {
         Text(text="Start Guessing",
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Cursive,
+            fontSize = 20.sp)
+    }
+}
+
+@Composable
+fun DrawButton(onClick: ()-> Unit){
+    Button(onClick=onClick,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
+            contentColor = Color.White),
+    ) {
+        Text(text="Draw word",
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Cursive,
             fontSize = 20.sp)
