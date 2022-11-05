@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role.Companion.Image
@@ -61,11 +62,10 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
                 WheelOfFortune(state = state.value, 
                     spinWheelFunction = {
                         viewModel.spinWheel()
-                      
                     }, navigateFunction = { navigationController.navigate(guessRoute)})
             }
             composable(route = guessRoute) {
-                Guessing(state = GuessStateUI())
+                Guessing(state = WheelOfFortuneUiState(), onDraw={viewModel.DrawWord()})
             }
         }
     }
@@ -97,9 +97,16 @@ fun GuessPreview(){
             }
             TextField(value = currentText.value,
                 onValueChange = {currentText.value=it})
-            Spacer(modifier = Modifier.height(150.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(modifier=Modifier.height(20.dp)){
+                Text(text="100")
+                Spacer(modifier = Modifier.width(50.dp))
+                Text(text="5 ")
+                Image(painterResource(id = R.drawable.download),
+                    contentDescription = null, contentScale = ContentScale.FillHeight)
+            }
+            Spacer(modifier = Modifier.height(100.dp))
             keyBoard()
-
         }
     }
 
@@ -107,27 +114,37 @@ fun GuessPreview(){
 }
 
 @Composable
-fun Guessing(state: GuessStateUI){
+fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit){
     Surface(modifier = Modifier.fillMaxSize()){
         Color.White
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(70.dp))
             TitleText(text = "Guess the Word")
             Spacer(modifier = Modifier.height(70.dp))
+            var enabled = true
             if(!state.started){
-
-            }
+                enabled=true }
             if(state.started){
-            WordProgressText(text = state.wordProgress) }
+                enabled=false }
+            DrawButton(DrawWordFunction = onDraw, enabled=enabled)
+            WordProgressText(text = state.wordProgress)
+            System.out.println(state.wordProgress)
             Spacer(modifier = Modifier.height(100.dp))
             val currentText = remember {
                 mutableStateOf(TextFieldValue())
             }
             TextField(value = currentText.value,
                 onValueChange = {currentText.value=it})
-            Spacer(modifier = Modifier.height(150.dp))
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(modifier=Modifier.height(10.dp)){
+Text(text=state.playerBalance.toString())
+                Spacer(modifier = Modifier.width(50.dp))
+                Text(text=state.lives.toString())
+                Image(painterResource(id = R.drawable.download),
+                    contentDescription = null, contentScale = ContentScale.FillHeight)
+            }
+            Spacer(modifier = Modifier.height(100.dp))
             keyBoard()
-
         }
     }
 }
@@ -178,7 +195,7 @@ fun WordProgressText(text: String){
 }
 @Composable
 fun keyBoardButton(onClick: () -> Unit, enabled: Boolean, text: String){
-    Button(modifier=Modifier.width(33.dp), onClick=onClick, enabled=enabled,
+    Button(modifier=Modifier.width(35.dp), onClick=onClick, enabled=enabled,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta)){
         Text(text = text, textAlign = TextAlign.Center)
     }
@@ -200,7 +217,7 @@ navigateFunction: ()-> Unit){
         TitleText("Wheel of Fortune")
         Spacer(modifier = Modifier.height(30.dp))
         Wheel(image = state.wheelImage)
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(30.dp))
         Text(text = state.wheelResult,
             textAlign = TextAlign.Center,
             fontSize = 30.sp, fontFamily = FontFamily.SansSerif)
@@ -264,8 +281,8 @@ fun NextButton(onClick: () -> Unit, enabled: Boolean){
 }
 
 @Composable
-fun DrawButton(onClick: ()-> Unit){
-    Button(onClick=onClick,
+fun DrawButton(DrawWordFunction: ()-> Unit, enabled: Boolean){
+    Button(onClick=DrawWordFunction,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black,
             contentColor = Color.White),
     ) {
