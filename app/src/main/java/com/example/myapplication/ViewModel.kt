@@ -13,7 +13,7 @@ data class WheelOfFortuneUiState(
     val wheelResult : String = "",
     val playerBalance : Int = 0,
     val spinnable : Boolean = true,
-    var wordProgress: String = "____",
+    var wordProgress: String = "__",
     val lives: Int = 5,
     val started: Boolean = false,
     val won: Boolean = false,
@@ -28,7 +28,7 @@ class WheelOfFortuneViewModel() : ViewModel() {
 var imageResource: Int = 0
     var result: Int = 0
     fun spinWheel() {
-        result = (1..6).random();
+        result = (1..6).random()
         imageResource=when(result){
             1->R.drawable.wheel_200
             2->R.drawable.wheel_100
@@ -37,6 +37,7 @@ var imageResource: Int = 0
             5->R.drawable.wheel_500
             else -> R.drawable.wheel_bankrupt
         }
+        UpdateBalance(result)
         val displayText: String = when(result){
             1->  "$200"
             2->  "$100"
@@ -55,9 +56,8 @@ var imageResource: Int = 0
         }
     }
     var wordDrawn: String = ""
-    var wordProgress: java.lang.StringBuilder = StringBuilder("")
+    var wordProgress: StringBuilder = StringBuilder("")
     fun DrawWord(){
-        val started: Boolean = true
         val Index: Int = Random.nextInt(0, Words.places.size)
         val category: String
         if(Index<=16){
@@ -70,14 +70,17 @@ var imageResource: Int = 0
         for(i in 1..wordDrawn.length){
             wordProgress.append("_ ")}
 
-        _uiState.update { it.copy(started=started,
+        _uiState.update {
+            it.copy(
+            started=true,
             wordDrawn = wordDrawn,
             categoryDrawn = category,
             wordProgress = wordProgress.toString()) }
+        System.out.println(_uiState.value.started)
     }
     var playerBalance: Int = 0
-    fun UpdateBalance() : Int{
-        var increment = when(result){
+    fun UpdateBalance(result: Int) : Int{
+        val increment = when(result){
             1->200
             2->100
             3->400
@@ -88,6 +91,7 @@ var imageResource: Int = 0
 if(increment!=0){
     playerBalance=playerBalance+increment
 }
+        _uiState.update { it.copy(playerBalance=playerBalance) }
         return playerBalance
     }
     var lives: Int =5
@@ -116,4 +120,30 @@ won=true
            _uiState.update { it.copy(lost=lost) }
        }
     }
+    fun LetterPress(letter: Char){
+        System.out.println("Char is" + letter.toString())
+        var flag = false
+        for(i in 0..wordDrawn.length-1){
+            if(wordDrawn.get(i)==letter ) {
+                flag=true
+            UpdateBalance(result)
+                wordProgress[i]=letter
+        }
+    }
+        if(!flag){
+            lives=lives-1
+            CheckLose()
+        }
+        else{
+            CheckWin()
+        }
+        if(!won && !lost){
+          _uiState.update { it.copy(spinnable = true) }
+        }
+        _uiState.update { it.copy(wordProgress=wordProgress.toString() }
+        System.out.println("Drawn "+wordDrawn + "Prog " + wordProgress + "Balance " + playerBalance)
+    }
+
+
 }
+
