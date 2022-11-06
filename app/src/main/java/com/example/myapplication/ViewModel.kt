@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,9 +89,9 @@ var imageResource: Int = 0
             5->500
             else->0
         }
-if(increment!=0){
-    playerBalance=playerBalance+increment
-}
+        if(increment!=0){
+            playerBalance=playerBalance+increment
+        }
         _uiState.update { it.copy(playerBalance=playerBalance) }
         return playerBalance
     }
@@ -124,12 +125,12 @@ won=true
         System.out.println("Char is" + letter.toString())
         var flag = false
         for(i in 0..wordDrawn.length-1){
-            if(wordDrawn.get(i)==letter ) {
+            if(wordDrawn.toUpperCase()[i] ==letter ) {
                 flag=true
-            UpdateBalance(result)
+                UpdateBalance(result)
                 wordProgress[i]=letter
+            }
         }
-    }
         if(!flag){
             lives=lives-1
             CheckLose()
@@ -140,7 +141,7 @@ won=true
         if(!won && !lost){
           _uiState.update { it.copy(spinnable = true) }
         }
-        _uiState.update { it.copy(wordProgress=wordProgress.toString() }
+        _uiState.update { it.copy(wordProgress=wordProgress.toString()) }
         System.out.println("Drawn "+wordDrawn + "Prog " + wordProgress + "Balance " + playerBalance)
     }
 

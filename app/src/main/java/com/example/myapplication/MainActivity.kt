@@ -67,8 +67,8 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
                     }, navigateFunction = { navigationController.navigate(guessRoute)})
             }
             composable(route = guessRoute) {
-                Guessing(state = WheelOfFortuneUiState(), onDraw={viewModel.DrawWord()},
-                onType={viewModel.LetterPress(currentLetter)})
+                Guessing(state = state.value, onDraw={viewModel.DrawWord()},
+                onType={viewModel.LetterPress(it)})
             }
         }
     }
@@ -118,7 +118,7 @@ fun GuessPreview(){
 }
 
 @Composable
-fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: ()-> Unit){
+fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit){
     Surface(modifier = Modifier.fillMaxSize()){
         Color.White
         Column(horizontalAlignment = CenterHorizontally) {
@@ -127,7 +127,7 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: ()-> Unit)
             Spacer(modifier = Modifier.height(50.dp))
             DrawButton(DrawWordFunction = onDraw, enabled=!state.started)
             Spacer(modifier = Modifier.height(50.dp))
-            var displayText : String
+            var displayText : String = ""
             if(state.won){
                 displayText="You Won!"
             }
@@ -147,20 +147,20 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: ()-> Unit)
                 onValueChange = {currentText.value=it})
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier=Modifier.height(20.dp)){
-Text(text="$ "+ state.playerBalance.toString())
+                Text(text="$ "+ state.playerBalance.toString())
                 Spacer(modifier = Modifier.width(40.dp))
                 Text(text=state.lives.toString()+" ")
                 Image(painterResource(id = R.drawable.download),
                     contentDescription = null, contentScale = ContentScale.FillHeight)
             }
             Spacer(modifier = Modifier.height(60.dp))
-            keyBoard(onClick = onType, state = WheelOfFortuneUiState())
+            keyBoard(onClick = onType, state = state)
         }
     }
 }
-var currentLetter: Char ='a'
+
 @Composable
-fun keyBoard(onClick: () -> Unit, state: WheelOfFortuneUiState){
+fun keyBoard(onClick: (Char) -> Unit, state: WheelOfFortuneUiState){
     Column(horizontalAlignment = CenterHorizontally) {
         Row(horizontalArrangement = Arrangement.Center) {
             keyBoardButton(onClick = onClick, enabled = state.spinnable, text = 'A')
@@ -204,12 +204,12 @@ fun WordProgressText(text: String){
         fontSize = 40.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Cursive)
 }
 @Composable
-fun keyBoardButton(onClick: () -> Unit, enabled: Boolean, text: Char){
-    Button(modifier=Modifier.width(35.dp), onClick=onClick, enabled=enabled,
+fun keyBoardButton(onClick: (Char) -> Unit, enabled: Boolean, text: Char){
+    Button(modifier=Modifier.width(35.dp), onClick={onClick(text)}, enabled=enabled,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta)){
         Text(text = text.toString(), textAlign = TextAlign.Center)
     }
-    currentLetter=text
+
     Spacer(modifier = Modifier.width(3.dp))
 }
 @Composable
