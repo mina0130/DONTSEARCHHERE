@@ -36,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import org.w3c.dom.Text
 
 class MainActivity : ComponentActivity() {
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+val restart: Boolean = false
 @Composable
 fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
     MyApplicationTheme {
@@ -64,11 +66,12 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
                 WheelOfFortune(state = state.value, 
                     spinWheelFunction = {
                         viewModel.spinWheel()
-                    }, navigateFunction = { navigationController.navigate(guessRoute)})
+                    }, navigateFunction = { navigationController.navigate(guessRoute)}, newGame ={viewModel.NewGame()})
             }
             composable(route = guessRoute) {
                 Guessing(state = state.value, onDraw={viewModel.DrawWord()},
-                onType={viewModel.LetterPress(it)})
+                onType={viewModel.LetterPress(it)}, navigateBack={navigationController.navigate(startRoute)},
+                    CheckWord={viewModel.CheckWord(it)}, newGame={viewModel.NewGame()})
             }
         }
     }
@@ -80,7 +83,7 @@ fun DefaultPreview() {
     MyApplicationTheme {
         WheelOfFortune(viewModel.uiState.collectAsState().value,
             spinWheelFunction = { viewModel.spinWheel() },
-            navigateFunction = {})
+            navigateFunction = {}, newGame = {})
     }
 }
 
@@ -118,13 +121,14 @@ fun GuessPreview(){
 }
 
 @Composable
-fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit){
+fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit,
+             navigateBack: ()-> Unit, CheckWord: (String)->Unit, newGame: ()->Unit){
     Surface(modifier = Modifier.fillMaxSize()){
         Color.White
         Column(horizontalAlignment = CenterHorizontally) {
             Spacer(modifier = Modifier.height(70.dp))
             TitleText(text = "Guess the Word")
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             DrawButton(DrawWordFunction = onDraw, enabled=!state.started)
             Spacer(modifier = Modifier.height(50.dp))
             var displayText : String = ""
@@ -138,22 +142,38 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
                 displayText=state.wordProgress
             }
             WordProgressText(text = displayText)
-            Text(text="Category: "+state.categoryDrawn)
-            Spacer(modifier = Modifier.height(50.dp))
-            val currentText = remember {
-                mutableStateOf(TextFieldValue())
+            if(!state.lost){
+                Text(text="Category: "+state.categoryDrawn)
             }
-            TextField(value = currentText.value,
-                onValueChange = {currentText.value=it})
+           else{
+                Text(text="Word was: "+state.wordDrawn)
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            if(state.started  && !state.pressable && !(state.won or state.lost)){
+                SpinAgainButton(onCLick = navigateBack, text="Spin Again")
+            }
+            else if(state.won or state.lost){
+                SpinAgainButton(onCLick = navigateBack, text = "New Game")
+            }
+            else{
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+            var word=GuessWordField()
+            GuessButton(onClick = CheckWord, word, enabled=state.pressable)
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier=Modifier.height(20.dp)){
                 Text(text="$ "+ state.playerBalance.toString())
                 Spacer(modifier = Modifier.width(40.dp))
-                Text(text=state.lives.toString()+" ")
+                if(state.lives>=0){
+                    Text(text=state.lives.toString()+" ")
+                }
+               else{
+                    Text(text="0")
+                }
                 Image(painterResource(id = R.drawable.download),
                     contentDescription = null, contentScale = ContentScale.FillHeight)
             }
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             keyBoard(onClick = onType, state = state)
         }
     }
@@ -163,36 +183,36 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
 fun keyBoard(onClick: (Char) -> Unit, state: WheelOfFortuneUiState){
     Column(horizontalAlignment = CenterHorizontally) {
         Row(horizontalArrangement = Arrangement.Center) {
-            keyBoardButton(onClick = onClick, enabled = state.spinnable, text = 'A')
-            keyBoardButton(onClick = onClick, state.spinnable, text = 'B')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'C')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'D')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'E')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'F')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'G')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'H')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'I')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'J')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'A')
+            keyBoardButton(onClick = onClick, enabled=state.pressable, text = 'B')
+            keyBoardButton(onClick = onClick, enabled=state.pressable, text = 'C')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'D')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'E')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'F')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'G')
+            keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'H')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'I')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'J')
         }
         Row() {
-            keyBoardButton(onClick = onClick, enabled = true, text = 'K')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'L')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'M')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'N')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'O')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'P')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'Q')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'R')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'S')
+            keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'K')
+            keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'L')
+            keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'M')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'N')
+            keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'O')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'P')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'Q')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'R')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'S')
         }
         Row(){
-            keyBoardButton(onClick = onClick, enabled = true, text = 'T')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'U')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'V')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'W')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'X')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'Y')
-            keyBoardButton(onClick = onClick, enabled = true, text = 'Z')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'T')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'U')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'V')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'W')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'X')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'Y')
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'Z')
         }
     }
 }
@@ -214,7 +234,17 @@ fun keyBoardButton(onClick: (Char) -> Unit, enabled: Boolean, text: Char){
 }
 @Composable
 fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
-navigateFunction: ()-> Unit){
+navigateFunction: ()-> Unit, newGame: () -> Unit){
+    Column(modifier = Modifier.height(30.dp), horizontalAlignment = CenterHorizontally) {
+        if (state.won or state.lost) {
+            Button(
+                onClick = newGame,
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+            ) {
+                Text(text = "Start New Game")
+            }
+        }
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -225,6 +255,7 @@ navigateFunction: ()-> Unit){
             ), horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Top)
     {
+
         TitleText("Wheel of Fortune")
         Spacer(modifier = Modifier.height(30.dp))
         Wheel(image = state.wheelImage)
@@ -241,7 +272,10 @@ navigateFunction: ()-> Unit){
             enabled=false
         }
     Spacer(modifier=Modifier.height(10.dp))
-    NextButton(onClick = navigateFunction, enabled)
+        if(!state.won && !state.lost){
+            NextButton(onClick = navigateFunction, enabled)
+        }
+
 
 
     }
@@ -303,5 +337,33 @@ fun DrawButton(DrawWordFunction: ()-> Unit, enabled: Boolean){
             fontSize = 20.sp)
     }
 }
+
+@Composable
+fun SpinAgainButton(onCLick: ()-> Unit, text: String){
+    Button(modifier = Modifier.height(30.dp), onClick = onCLick, colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta)){
+        Text(text=text, fontSize = 10.sp)
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+fun GuessWordField(): String{
+    val currentText = remember {
+        mutableStateOf(TextFieldValue())
+    }
+    TextField(value = currentText.value,
+        onValueChange = {currentText.value=it})
+    return currentText.toString()
+}
+@Composable
+fun GuessButton(onClick: (String) -> Unit, guess: String, enabled: Boolean){
+    Row(horizontalArrangement =Arrangement.Start){
+        Button(onClick={onClick(guess)},  enabled=enabled){
+            Text(text="Try", fontSize = 10.sp)
+        }
+    }
+
+}
+
 
 
