@@ -71,7 +71,7 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
             composable(route = guessRoute) {
                 Guessing(state = state.value, onDraw={viewModel.DrawWord()},
                 onType={viewModel.LetterPress(it)}, navigateBack={navigationController.navigate(startRoute)},
-                    CheckWord={viewModel.CheckWord(it)}, newGame={viewModel.NewGame()})
+                    CheckWord={viewModel.CheckWord(it)})
             }
         }
     }
@@ -122,7 +122,7 @@ fun GuessPreview(){
 
 @Composable
 fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit,
-             navigateBack: ()-> Unit, CheckWord: (String)->Unit, newGame: ()->Unit){
+             navigateBack: ()-> Unit, CheckWord: (String)->Unit){
     Surface(modifier = Modifier.fillMaxSize()){
         Color.White
         Column(horizontalAlignment = CenterHorizontally) {
@@ -142,7 +142,7 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
                 displayText=state.wordProgress
             }
             WordProgressText(text = displayText)
-            if(!state.lost){
+            if(!state.lost && !state.won){
                 Text(text="Category: "+state.categoryDrawn)
             }
            else{
@@ -235,7 +235,7 @@ fun keyBoardButton(onClick: (Char) -> Unit, enabled: Boolean, text: Char){
 @Composable
 fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
 navigateFunction: ()-> Unit, newGame: () -> Unit){
-    Column(modifier = Modifier.height(30.dp), horizontalAlignment = CenterHorizontally) {
+    Column(modifier = Modifier.height(30.dp)) {
         if (state.won or state.lost) {
             Button(
                 onClick = newGame,

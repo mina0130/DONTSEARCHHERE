@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import androidx.compose.ui.text.toUpperCase
+import androidx.compose.ui.window.isPopupLayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +40,6 @@ var imageResource: Int = 0
             5->R.drawable.wheel_500
             else -> R.drawable.wheel_bankrupt
         }
-        UpdateBalance()
         val displayText: String = when(result){
             1->  "$200"
             2->  "$100"
@@ -78,7 +78,7 @@ var imageResource: Int = 0
         }
        wordDrawn = Words.places[Index]
         for(i in 1..wordDrawn.length){
-            wordProgress.append("_ ")}
+            wordProgress.append("_")}
 
         _uiState.update {
             it.copy(
@@ -87,7 +87,6 @@ var imageResource: Int = 0
             categoryDrawn = category,
             wordProgress = wordProgress.toString(),
             pressable = true) }
-        System.out.println(_uiState.value.started)
     }
     var playerBalance: Int = 0
     fun UpdateBalance(){
@@ -99,8 +98,12 @@ var imageResource: Int = 0
             5->500
             else->0
         }
+        System.out.println(playerBalance)
         if(increment!=0){
             playerBalance=playerBalance+increment
+        }
+        else if(increment==0){
+            playerBalance=0
         }
         _uiState.update { it.copy(playerBalance=playerBalance) }
     }
@@ -108,6 +111,11 @@ var imageResource: Int = 0
 
     fun CheckWord(guess: String){
         if (guess.equals(wordDrawn, ignoreCase = true)){
+            for(i in 0..wordDrawn.length-1){
+                if (wordProgress[i].equals('_')){
+                    UpdateBalance()
+                }
+            }
             _uiState.update{it.copy(wordProgress = wordDrawn)}
             CheckWin()
         }
@@ -118,12 +126,18 @@ var imageResource: Int = 0
         _uiState.update {it.copy(lives=lives, pressable = false, spinnable = true)  }
     }
     fun CheckWin(){
-if(wordProgress.toString().equals(wordDrawn, ignoreCase = true)){
+if(wordProgress.toString().equals(wordDrawn, ignoreCase = true))
     _uiState.update { it.copy(won=true, spinnable = false) }
-}
         }
     fun NewGame(){
-        _uiState.update { it.copy(started = false, spinnable = true, wordDrawn = "", playerBalance = 0, lives=5, won=false, lost = false) }
+        wordProgress.clear()
+        lives=5
+        playerBalance=0
+        wordDrawn=""
+        _uiState.update { it.copy(started = false,
+            spinnable = true, wordDrawn = "", playerBalance = 0,
+            lives=5, won=false, lost = false, wordProgress = "",
+            categoryDrawn = "", wheelResult = "0") }
     }
     var lost: Boolean=false
     fun CheckLose(){
@@ -151,7 +165,6 @@ if(wordProgress.toString().equals(wordDrawn, ignoreCase = true)){
         }
         _uiState.update { it.copy(wordProgress=wordProgress.toString(),
             lives=lives, pressable = false, spinnable = true) }
-        System.out.println("Drawn "+wordDrawn + "Prog " + wordProgress + "Balance " + playerBalance)
     }
 }
 
