@@ -55,11 +55,14 @@ var imageResource: Int = 0
         else{
             pressable = false
         }
+        if(result == 6){
+            playerBalance = 0
+        }
         _uiState.update {
             it.copy(
                 wheelImage = imageResource,
                 wheelResult = displayText,
-                playerBalance = 0,
+                playerBalance = playerBalance,
                 spinnable = false,
                 pressable = pressable
             )
@@ -125,10 +128,12 @@ var imageResource: Int = 0
     }
         _uiState.update {it.copy(lives=lives, pressable = false, spinnable = true)  }
     }
+
     fun CheckWin(){
-if(wordProgress.toString().equals(wordDrawn, ignoreCase = true))
-    _uiState.update { it.copy(won=true, spinnable = false) }
-        }
+        if(_uiState.value.wordProgress.equals(_uiState.value.wordDrawn, ignoreCase = true))
+            _uiState.update { it.copy(won=true, spinnable = false) }
+    }
+
     fun NewGame(){
         wordProgress.clear()
         lives=5
@@ -140,12 +145,14 @@ if(wordProgress.toString().equals(wordDrawn, ignoreCase = true))
             categoryDrawn = "", wheelResult = "0") }
     }
     var lost: Boolean=false
+
     fun CheckLose(){
        if(lives<=0){
            lost=true
            _uiState.update { it.copy(lost=lost, spinnable = false) }
        }
     }
+
     fun LetterPress(letter: Char){
         var flag = false
         for(i in 0..wordDrawn.length-1){

@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-val restart: Boolean = false
+
 @Composable
 fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
     MyApplicationTheme {
@@ -158,8 +158,8 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
             else{
                 Spacer(modifier = Modifier.height(20.dp))
             }
-            var word=GuessWordField()
-            GuessButton(onClick = CheckWord, word, enabled=state.pressable)
+
+            GuessButton(onClick = CheckWord, enabled=state.pressable)
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier=Modifier.height(20.dp)){
                 Text(text="$ "+ state.playerBalance.toString())
@@ -347,18 +347,27 @@ fun SpinAgainButton(onCLick: ()-> Unit, text: String){
 }
 
 @Composable
-fun GuessWordField(): String{
+fun GuessWordField(){
     val currentText = remember {
         mutableStateOf(TextFieldValue())
     }
     TextField(value = currentText.value,
         onValueChange = {currentText.value=it})
-    return currentText.toString()
+
 }
 @Composable
-fun GuessButton(onClick: (String) -> Unit, guess: String, enabled: Boolean){
-    Row(horizontalArrangement =Arrangement.Start){
-        Button(onClick={onClick(guess)},  enabled=enabled){
+fun GuessButton(onClick: (String) -> Unit, enabled: Boolean){
+
+    val currentText = remember {
+        mutableStateOf("")
+    }
+
+    Column(horizontalAlignment = CenterHorizontally){
+        TextField(value = currentText.value,
+            onValueChange = {currentText.value=it},
+            singleLine = true)
+
+        Button(onClick={onClick(currentText.value)},  enabled=enabled){
             Text(text="Try", fontSize = 10.sp)
         }
     }
