@@ -24,6 +24,24 @@ object Words {
         "Olivia",
         "Noah",
         "Emma",
-        "Benjamin"
+        "Benjamin",
+    "Lea",
+        "Lucia",
+        "Jasmin",
+        "Anna",
+        "Albert",
+        "Cheese",
+        "Chokofant",
+        "Pasta",
+        "Banana",
+        "Apple",
+        "Elephant",
+        "Camel",
+        "Cat",
+        "Dog",
+        "Rabbit",
+        "Kangaroo",
+        "Spider"
+
     )
 }

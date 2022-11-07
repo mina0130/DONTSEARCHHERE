@@ -130,7 +130,9 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
             TitleText(text = "Guess the Word")
             Spacer(modifier = Modifier.height(40.dp))
             DrawButton(DrawWordFunction = onDraw, enabled=!state.started)
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(text="Tried Letters: " + state.triedLetters, textAlign = TextAlign.Left)
+            Spacer(modifier = Modifier.height(30.dp))
             var displayText : String = ""
             if(state.won){
                 displayText="You Won!"
@@ -235,16 +237,6 @@ fun keyBoardButton(onClick: (Char) -> Unit, enabled: Boolean, text: Char){
 @Composable
 fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
 navigateFunction: ()-> Unit, newGame: () -> Unit){
-    Column(modifier = Modifier.height(30.dp)) {
-        if (state.won or state.lost) {
-            Button(
-                onClick = newGame,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
-            ) {
-                Text(text = "Start New Game")
-            }
-        }
-    }
     Column(
         Modifier
             .fillMaxSize()
@@ -255,28 +247,34 @@ navigateFunction: ()-> Unit, newGame: () -> Unit){
             ), horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Top)
     {
-
-        TitleText("Wheel of Fortune")
-        Spacer(modifier = Modifier.height(30.dp))
-        Wheel(image = state.wheelImage)
-        Spacer(modifier = Modifier.height(30.dp))
-        Text(text = state.wheelResult,
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp, fontFamily = FontFamily.SansSerif)
-
-        SpinButton(onClick = spinWheelFunction, enabled = state.spinnable)
-        var enabled = false
-        if(!state.spinnable){
-            enabled=true }
-        if(state.spinnable){
-            enabled=false
+        if (state.won or state.lost) {
+            NewGameButton(newGame)
         }
-    Spacer(modifier=Modifier.height(10.dp))
-        if(!state.won && !state.lost){
-            NextButton(onClick = navigateFunction, enabled)
+        else {
+            TitleText("Wheel of Fortune")
+            Spacer(modifier = Modifier.height(30.dp))
+            Wheel(image = state.wheelImage)
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                text = state.wheelResult,
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp, fontFamily = FontFamily.SansSerif
+            )
+
+            SpinButton(onClick = spinWheelFunction, enabled = state.spinnable)
+            var enabled = false
+            if (!state.spinnable) {
+                enabled = true
+            }
+            if (state.spinnable) {
+                enabled = false
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            if (!state.won && !state.lost) {
+                NextButton(onClick = navigateFunction, enabled)
+            }
+
         }
-
-
 
     }
 }
@@ -347,15 +345,6 @@ fun SpinAgainButton(onCLick: ()-> Unit, text: String){
 }
 
 @Composable
-fun GuessWordField(){
-    val currentText = remember {
-        mutableStateOf(TextFieldValue())
-    }
-    TextField(value = currentText.value,
-        onValueChange = {currentText.value=it})
-
-}
-@Composable
 fun GuessButton(onClick: (String) -> Unit, enabled: Boolean){
 
     val currentText = remember {
@@ -367,10 +356,23 @@ fun GuessButton(onClick: (String) -> Unit, enabled: Boolean){
             onValueChange = {currentText.value=it},
             singleLine = true)
 
-        Button(onClick={onClick(currentText.value)},  enabled=enabled){
+        Button(onClick={onClick(currentText.value)},  enabled=enabled,
+            colors=ButtonDefaults.buttonColors(backgroundColor = Color.Black,
+            contentColor = Color.White)){
             Text(text="Try", fontSize = 10.sp)
         }
     }
+
+}
+@Composable
+fun NewGameButton(onClick: () -> Unit){
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White, contentColor = Color.Black)) {
+            Text(text = "Start New Game", fontFamily = FontFamily.Cursive,
+                fontSize = 60.sp, textAlign= TextAlign.Center)
+        }
+
 
 }
 

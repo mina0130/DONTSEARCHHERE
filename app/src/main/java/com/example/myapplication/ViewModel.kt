@@ -22,6 +22,7 @@ data class WheelOfFortuneUiState(
     val lost: Boolean= false,
     val wordDrawn: String = "",
     val categoryDrawn: String = "",
+    var triedLetters: String="",
 val pressable: Boolean = false
 )
 
@@ -73,11 +74,17 @@ var imageResource: Int = 0
     fun DrawWord(){
         val Index: Int = Random.nextInt(0, Words.places.size)
         val category: String
-        if(Index<=16){
+        if(Index<=17){
             category="places"
         }
-        else {
+        else if(Index<=27){
             category="names"
+        }
+        else if(Index<=32) {
+            category="food"
+        }
+        else{
+            category="Animals"
         }
        wordDrawn = Words.places[Index]
         for(i in 1..wordDrawn.length){
@@ -152,8 +159,9 @@ var imageResource: Int = 0
            _uiState.update { it.copy(lost=lost, spinnable = false) }
        }
     }
-
+val triedLetterstemp: StringBuilder= StringBuilder()
     fun LetterPress(letter: Char){
+        if(!triedLetterstemp.contains(letter)){
         var flag = false
         for(i in 0..wordDrawn.length-1){
             System.out.println(wordDrawn.get(i))
@@ -170,8 +178,14 @@ var imageResource: Int = 0
         else{
             CheckWin()
         }
-        _uiState.update { it.copy(wordProgress=wordProgress.toString(),
-            lives=lives, pressable = false, spinnable = true) }
+        triedLetterstemp.append(letter)
+            _uiState.update { it.copy(wordProgress=wordProgress.toString(),
+                lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString()) }
+        }
+        else{
+
+        }
+
     }
 }
 
