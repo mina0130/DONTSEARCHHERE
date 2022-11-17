@@ -59,7 +59,7 @@ fun GuessPreview(){
                     painterResource(id = R.drawable.download),
                     contentDescription = null, contentScale = ContentScale.FillHeight)
             }
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(50.dp))
             keyBoard(onClick = {/*TODO*/}, state=WheelOfFortuneUiState())
         }
     }
@@ -75,9 +75,9 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(70.dp))
             TitleText(text = "Guess the Word")
-            Spacer(modifier = Modifier.height(40.dp))
-            DrawButton(DrawWordFunction = onDraw, enabled=!state.started)
             Spacer(modifier = Modifier.height(30.dp))
+            DrawButton(DrawWordFunction = onDraw, enabled=!state.started)
+            Spacer(modifier = Modifier.height(20.dp))
             Text(text="Tried Letters: " + state.triedLetters, textAlign = TextAlign.Left)
             Spacer(modifier = Modifier.height(30.dp))
             var displayText = ""
