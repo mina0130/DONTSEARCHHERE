@@ -138,25 +138,26 @@ var imageResource: Int = 0
 
     fun CheckWin(){
         if(_uiState.value.wordProgress.equals(_uiState.value.wordDrawn, ignoreCase = true))
-            _uiState.update { it.copy(won=true, spinnable = false) }
+            _uiState.update { it.copy(won=true, spinnable = false, triedLetters = "") }
     }
 
     fun NewGame(){
         wordProgress.clear()
+        triedLetterstemp.clear()
         lives=5
         playerBalance=0
         wordDrawn=""
         _uiState.update { it.copy(started = false,
             spinnable = true, wordDrawn = "", playerBalance = 0,
             lives=5, won=false, lost = false, wordProgress = "",
-            categoryDrawn = "", wheelResult = "0") }
+            categoryDrawn = "", wheelResult = "0", triedLetters = "") }
     }
     var lost: Boolean=false
 
     fun CheckLose(){
        if(lives<=0){
            lost=true
-           _uiState.update { it.copy(lost=lost, spinnable = false) }
+           _uiState.update { it.copy(lost=lost, spinnable = false, triedLetters = "") }
        }
     }
 val triedLetterstemp: StringBuilder= StringBuilder()
@@ -171,6 +172,9 @@ val triedLetterstemp: StringBuilder= StringBuilder()
                 wordProgress.setCharAt(i, letter)
             }
         }
+            triedLetterstemp.append(letter)
+            _uiState.update { it.copy(wordProgress=wordProgress.toString(),
+                lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString()) }
         if(!flag){
             lives=lives-1
             CheckLose()
@@ -178,9 +182,7 @@ val triedLetterstemp: StringBuilder= StringBuilder()
         else{
             CheckWin()
         }
-        triedLetterstemp.append(letter)
-            _uiState.update { it.copy(wordProgress=wordProgress.toString(),
-                lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString()) }
+
         }
         else{
 
