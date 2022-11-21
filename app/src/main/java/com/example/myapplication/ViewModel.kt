@@ -157,7 +157,7 @@ var imageResource: Int = 0
            _uiState.update { it.copy(lost=lost, spinnable = false, triedLetters = "") }
        }
     }
-val triedLetterstemp: StringBuilder= StringBuilder()
+    val triedLetterstemp: StringBuilder= StringBuilder()
     fun LetterPress(letter: Char){
         if(!triedLetterstemp.contains(letter)){
         var flag = false
