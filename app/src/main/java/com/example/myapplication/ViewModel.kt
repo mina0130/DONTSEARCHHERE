@@ -1,9 +1,6 @@
 package com.example.myapplication
 
-import androidx.compose.ui.text.toUpperCase
-import androidx.compose.ui.window.isPopupLayout
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

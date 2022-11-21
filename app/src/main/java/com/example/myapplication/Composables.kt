@@ -80,7 +80,7 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
             Spacer(modifier = Modifier.height(20.dp))
             Text(text="Tried Letters: " + state.triedLetters, textAlign = TextAlign.Left)
             Spacer(modifier = Modifier.height(30.dp))
-            var displayText = ""
+            val displayText: String
             if(state.won){
                 displayText="You Won!"
             }
