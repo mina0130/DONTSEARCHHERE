@@ -27,7 +27,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 fun DefaultPreview() {
     val viewModel = WheelOfFortuneViewModel()
     MyApplicationTheme {
-        WheelOfFortune(viewModel.uiState.collectAsState().value,
+        WheelOfFortune(viewModel.uiState.value,
             spinWheelFunction = { viewModel.spinWheel() },
             navigateFunction = {}, newGame = {})
     }

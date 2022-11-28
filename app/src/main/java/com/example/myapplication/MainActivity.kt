@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -30,19 +31,19 @@ fun WheelOfFortuneApp(viewModel: WheelOfFortuneViewModel){
         val startRoute = "start"
         val guessRoute = "guess"
         val navigationController = rememberNavController()
-        val state = viewModel.uiState.collectAsState()
+        val state = viewModel.uiState.value
         NavHost(navController = navigationController,
             modifier = Modifier.fillMaxSize(),
             startDestination = startRoute
         ) {
             composable(route = startRoute) {
-                WheelOfFortune(state = state.value, 
+                WheelOfFortune(state = state,
                     spinWheelFunction = {
                         viewModel.spinWheel()
                     }, navigateFunction = { navigationController.navigate(guessRoute)}, newGame ={viewModel.NewGame()})
             }
             composable(route = guessRoute) {
-                Guessing(state = state.value, onDraw={viewModel.DrawWord()},
+                Guessing(state = state, onDraw={viewModel.DrawWord()},
                 onType={viewModel.LetterPress(it)}, navigateBack={navigationController.navigate(startRoute)},
                     CheckWord={viewModel.CheckWord(it)})
             }

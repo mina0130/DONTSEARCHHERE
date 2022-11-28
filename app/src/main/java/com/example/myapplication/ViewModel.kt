@@ -1,5 +1,7 @@
 package com.example.myapplication
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,8 +26,9 @@ val pressable: Boolean = false
 )
 
 class WheelOfFortuneViewModel() : ViewModel() {
-    private val _uiState = MutableStateFlow(WheelOfFortuneUiState())
-    val uiState = _uiState.asStateFlow()
+    private val _uiState = mutableStateOf(WheelOfFortuneUiState())
+    //private val _uiState = MutableStateFlow(WheelOfFortuneUiState())
+    val uiState: State<WheelOfFortuneUiState> = _uiState
 var imageResource: Int = 0
     var result: Int = 0
     fun spinWheel() {
@@ -56,8 +59,7 @@ var imageResource: Int = 0
         if(result == 6){
             playerBalance = 0
         }
-        _uiState.update {
-            it.copy(
+        _uiState.value = _uiState.value.copy(
                 wheelImage = imageResource,
                 wheelResult = displayText,
                 playerBalance = playerBalance,
@@ -65,7 +67,6 @@ var imageResource: Int = 0
                 pressable = pressable
             )
         }
-    }
     var wordDrawn: String = ""
     var wordProgress: StringBuilder = StringBuilder("")
     fun DrawWord(){
@@ -87,14 +88,13 @@ var imageResource: Int = 0
         for(i in 1..wordDrawn.length){
             wordProgress.append("_")}
 
-        _uiState.update {
-            it.copy(
+       _uiState.value = _uiState.value.copy(
             started=true,
             wordDrawn = wordDrawn,
             categoryDrawn = category,
             wordProgress = wordProgress.toString(),
             pressable = true) }
-    }
+
     var playerBalance: Int = 0
     fun UpdateBalance(){
         val increment = when(result){
@@ -112,7 +112,7 @@ var imageResource: Int = 0
         else if(increment==0){
             playerBalance=0
         }
-        _uiState.update { it.copy(playerBalance=playerBalance) }
+        _uiState.value =_uiState.value.copy(playerBalance=playerBalance)
     }
     var lives: Int =5
 
@@ -123,20 +123,17 @@ var imageResource: Int = 0
                     UpdateBalance()
                 }
             }
-            _uiState.update{it.copy(wordProgress = wordDrawn)}
-            CheckWin()
-        }
+            _uiState.value = _uiState.value.copy(wordProgress = wordDrawn)
+            CheckWin() }
     else {
         lives=lives-1
             CheckLose()
     }
-        _uiState.update {it.copy(lives=lives, pressable = false, spinnable = true)  }
-    }
+        _uiState.value =  _uiState.value.copy(lives=lives, pressable = false, spinnable = true)  }
 
     fun CheckWin(){
         if(_uiState.value.wordProgress.equals(_uiState.value.wordDrawn, ignoreCase = true))
-            _uiState.update { it.copy(won=true, spinnable = false, triedLetters = "") }
-    }
+            _uiState.value =  _uiState.value.copy(won=true, spinnable = false, triedLetters = "") }
 
     fun NewGame(){
         wordProgress.clear()
@@ -144,37 +141,39 @@ var imageResource: Int = 0
         lives=5
         playerBalance=0
         wordDrawn=""
-        _uiState.update { it.copy(started = false,
+        _uiState.value =   _uiState.value.copy(started = false,
             spinnable = true, wordDrawn = "", playerBalance = 0,
             lives=5, won=false, lost = false, wordProgress = "",
             categoryDrawn = "", wheelResult = "0", triedLetters = "") }
-    }
+
     var lost: Boolean=false
 
     fun CheckLose(){
        if(lives<=0){
            lost=true
-           _uiState.update { it.copy(lost=lost, spinnable = false, triedLetters = "") }
+           _uiState.value = _uiState.value.copy(lost=lost, spinnable = false, triedLetters = "") }
        }
-    }
+
     val triedLetterstemp: StringBuilder= StringBuilder()
     fun LetterPress(letter: Char){
         if(!triedLetterstemp.contains(letter)){
         var flag = false
-        for(i in 0..wordDrawn.length-1){
+        for(i in 0..wordDrawn.length-1) {
             System.out.println(wordDrawn.get(i))
-            if(wordDrawn.toUpperCase()[i] ==letter ) {
-                flag=true
+            if (wordDrawn.toUpperCase()[i] == letter) {
+                flag = true
                 UpdateBalance()
                 wordProgress.setCharAt(i, letter)
             }
         }
             triedLetterstemp.append(letter)
-            _uiState.update { it.copy(wordProgress=wordProgress.toString(),
-                lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString()) }
+            _uiState.value =  _uiState.value.copy(wordProgress=wordProgress.toString(),
+                lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString())
         if(!flag){
             lives=lives-1
             CheckLose()
+            _uiState.value =  _uiState.value.copy(wordProgress=wordProgress.toString(),
+                lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString())
         }
         else{
             CheckWin()
