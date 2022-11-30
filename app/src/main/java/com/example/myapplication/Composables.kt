@@ -92,9 +92,9 @@ fun keyBoard(onClick: (Char) -> Unit, state: WheelOfFortuneUiState){
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'G')
             keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'H')
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'I')
-            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'J')
         }
         Row() {
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'J')
             keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'K')
             keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'L')
             keyBoardButton(onClick = onClick, enabled =state.pressable, text = 'M')
@@ -103,9 +103,9 @@ fun keyBoard(onClick: (Char) -> Unit, state: WheelOfFortuneUiState){
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'P')
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'Q')
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'R')
-            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'S')
         }
         Row(){
+            keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'S')
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'T')
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'U')
             keyBoardButton(onClick = onClick, enabled = state.pressable, text = 'V')
