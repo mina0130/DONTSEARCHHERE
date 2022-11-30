@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -14,58 +13,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.ui.theme.MyApplicationTheme
 
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    val viewModel = WheelOfFortuneViewModel()
-    MyApplicationTheme {
-        WheelOfFortune(viewModel.uiState.value,
-            spinWheelFunction = { viewModel.spinWheel() },
-            navigateFunction = {}, newGame = {})
-    }
-}
-
-@Preview
-@Composable
-fun GuessPreview(){
-    Surface(modifier = Modifier.fillMaxSize()){
-        Color.White
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(70.dp))
-            TitleText(text = "Guess the Word")
-            Spacer(modifier = Modifier.height(70.dp))
-            WordProgressText(text = "______")
-            Text("Category: ")
-            Spacer(modifier = Modifier.height(100.dp))
-            val currentText = remember {
-                mutableStateOf(TextFieldValue())
-            }
-            TextField(value = currentText.value,
-                onValueChange = {currentText.value=it})
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(modifier= Modifier.height(20.dp)){
-                Text(text="100")
-                Spacer(modifier = Modifier.width(50.dp))
-                Text(text="5 ")
-                Image(
-                    painterResource(id = R.drawable.download),
-                    contentDescription = null, contentScale = ContentScale.FillHeight)
-            }
-            Spacer(modifier = Modifier.height(50.dp))
-            keyBoard(onClick = {/*TODO*/}, state=WheelOfFortuneUiState())
-        }
-    }
-
-
-}
 
 @Composable
 fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit,
