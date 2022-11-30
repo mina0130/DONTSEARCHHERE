@@ -27,7 +27,6 @@ val pressable: Boolean = false
 
 class WheelOfFortuneViewModel() : ViewModel() {
     private val _uiState = mutableStateOf(WheelOfFortuneUiState())
-    //private val _uiState = MutableStateFlow(WheelOfFortuneUiState())
     val uiState: State<WheelOfFortuneUiState> = _uiState
 var imageResource: Int = 0
     var result: Int = 0

@@ -70,16 +70,15 @@ fun GuessPreview(){
 @Composable
 fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit,
              navigateBack: ()-> Unit, CheckWord: (String)->Unit){
-    Surface(modifier = Modifier.fillMaxSize()){
+    Surface(modifier = Modifier.fillMaxSize().absolutePadding(10.dp, 10.dp, 10.dp,10.dp)){
         Color.White
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(70.dp))
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             TitleText(text = "Guess the Word")
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             DrawButton(DrawWordFunction = onDraw, enabled=!state.started)
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(text="Tried Letters: " + state.triedLetters, textAlign = TextAlign.Left)
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             val displayText: String
             if(state.won){
                 displayText="You Won!"
@@ -109,7 +108,7 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
             }
 
             GuessButton(onClick = CheckWord, enabled=state.pressable)
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Row(modifier= Modifier.height(20.dp)){
                 Text(text="$ "+ state.playerBalance.toString())
                 Spacer(modifier = Modifier.width(40.dp))
@@ -123,7 +122,7 @@ fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> U
                     painterResource(id = R.drawable.download),
                     contentDescription = null, contentScale = ContentScale.FillHeight)
             }
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             keyBoard(onClick = onType, state = state)
         }
     }
@@ -190,10 +189,10 @@ fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
             .fillMaxSize()
             .absolutePadding(
                 10.dp,
-                100.dp,
+                10.dp,
                 10.dp, 0.dp
             ), horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top)
+        verticalArrangement = Arrangement.Center)
     {
         if (state.won or state.lost) {
             NewGameButton(newGame)
@@ -230,15 +229,15 @@ fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
 fun TitleText(text: String){
     Text(text = text,
         textAlign = TextAlign.Center,
-        fontSize = 60.sp, fontFamily = FontFamily.Cursive)
+        fontSize = 40.sp, fontFamily = FontFamily.Cursive)
 }
 
 
 @Composable
 fun Wheel(image : Int) {
     Surface(modifier = Modifier
-        .height(300.dp)
-        .width(300.dp)){
+        .height(200.dp)
+        .width(200.dp)){
         Image(painter = painterResource(image),
             contentDescription = null,
             contentScale = ContentScale.FillWidth)
