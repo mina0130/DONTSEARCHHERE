@@ -26,8 +26,10 @@ class WheelOfFortuneViewModel() : ViewModel() {
     val uiState: State<WheelOfFortuneUiState> = _uiState
 var imageResource: Int = 0
     var result: Int = 0
+
     fun spinWheel() {
         result = (1..6).random()
+        // random image is selected and then the corresponding amount is assigned to the String
         imageResource=when(result){
             1->R.drawable.wheel_200
             2->R.drawable.wheel_100
@@ -44,6 +46,9 @@ var imageResource: Int = 0
             5-> "$500"
             else-> "Bankrupt"
         }
+        // wheel cannot be spun twice without guessing first
+        // guesspage cannot be navigated to without spinning the wheel first
+        // boolean pressable is passed to two buttons, with the enabled state of one being ==pressable and the other being !=pressable
         val pressable: Boolean
         if(_uiState.value.started){
             pressable = true
@@ -64,6 +69,9 @@ var imageResource: Int = 0
         }
     var wordDrawn: String = ""
     var wordProgress: StringBuilder = StringBuilder("")
+
+    // a random word is chosen from the list.
+    // The list is sorted by categories such that the category is displayed by index of the word chosen
     fun DrawWord(){
         val Index: Int = Random.nextInt(0, Words.places.size)
         val category: String
@@ -92,6 +100,7 @@ var imageResource: Int = 0
 
     var playerBalance: Int = 0
     fun UpdateBalance(){
+        // balance is incremented by the result of the wheel spin (unless bankrupt)
         val increment = when(result){
             1->200
             2->100
@@ -112,25 +121,30 @@ var imageResource: Int = 0
     var lives: Int =5
 
     fun CheckWord(guess: String){
+        // check if word guessed in the textfield is exactly the same as the word drawn
         if (guess.equals(wordDrawn, ignoreCase = true)){
             for(i in 0..wordDrawn.length-1){
                 if (wordProgress[i].equals('_')){
+                    //updates balance for each remaining letter if word is correct
                     UpdateBalance()
                 }
             }
             _uiState.value = _uiState.value.copy(wordProgress = wordDrawn)
             CheckWin() }
     else {
+        // if word is guessed incorrectly, a life is lost
         lives=lives-1
             CheckLose()
     }
         _uiState.value =  _uiState.value.copy(lives=lives, pressable = false, spinnable = true)  }
 
     fun CheckWin(){
+        // checks if game is won
         if(_uiState.value.wordProgress.equals(_uiState.value.wordDrawn, ignoreCase = true))
             _uiState.value =  _uiState.value.copy(won=true, spinnable = false, triedLetters = "") }
 
     fun NewGame(){
+        // resets the game data and lets u start a new game
         wordProgress.clear()
         triedLetterstemp.clear()
         lives=5
@@ -144,6 +158,7 @@ var imageResource: Int = 0
     var lost: Boolean=false
 
     fun CheckLose(){
+        // checks if game is lost
        if(lives<=0){
            lost=true
            _uiState.value = _uiState.value.copy(lost=lost, spinnable = false, triedLetters = "") }
@@ -151,6 +166,8 @@ var imageResource: Int = 0
 
     val triedLetterstemp: StringBuilder= StringBuilder()
     fun LetterPress(letter: Char){
+        // matches a guessed letter against every letter in the word. sets flag true as soon as an occurence is found
+        // increments balance for each occurence of a correct letter
         if(!triedLetterstemp.contains(letter)){
         var flag = false
         for(i in 0..wordDrawn.length-1) {
@@ -164,6 +181,7 @@ var imageResource: Int = 0
             triedLetterstemp.append(letter)
             _uiState.value =  _uiState.value.copy(wordProgress=wordProgress.toString(),
                 lives=lives, pressable = false, spinnable = true, triedLetters = triedLetterstemp.toString())
+            // if no occurence is found, flag will be false, and life will be lost
         if(!flag){
             lives=lives-1
             CheckLose()

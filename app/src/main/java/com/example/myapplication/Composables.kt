@@ -17,8 +17,54 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+@Composable
+// page with spinning wheel
+fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
+                   navigateFunction: ()-> Unit, newGame: () -> Unit){
+    Column(
+        Modifier
+            .fillMaxSize()
+            .absolutePadding(
+                10.dp,
+                10.dp,
+                10.dp, 0.dp
+            ), horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center)
+    {
+        if (state.won or state.lost) {
+            NewGameButton(newGame)
+        }
+        else {
+            TitleText("Wheel of Fortune")
+            Spacer(modifier = Modifier.height(30.dp))
+            Wheel(image = state.wheelImage)
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                text = state.wheelResult,
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp, fontFamily = FontFamily.SansSerif
+            )
+
+            SpinButton(onClick = spinWheelFunction, enabled = state.spinnable)
+            var enabled = false
+            if (!state.spinnable) {
+                enabled = true
+            }
+            if (state.spinnable) {
+                enabled = false
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            if (!state.won && !state.lost) {
+                NextButton(onClick = navigateFunction, enabled)
+            }
+
+        }
+
+    }
+}
 
 @Composable
+// for guessing page
 fun Guessing(state: WheelOfFortuneUiState, onDraw: ()-> Unit, onType: (Char)-> Unit,
              navigateBack: ()-> Unit, CheckWord: (String)->Unit){
     Surface(modifier = Modifier.fillMaxSize().absolutePadding(10.dp, 10.dp, 10.dp,10.dp)){
@@ -132,50 +178,7 @@ fun keyBoardButton(onClick: (Char) -> Unit, enabled: Boolean, text: Char){
 
     Spacer(modifier = Modifier.width(3.dp))
 }
-@Composable
-fun WheelOfFortune(state : WheelOfFortuneUiState, spinWheelFunction: () ->Unit,
-                   navigateFunction: ()-> Unit, newGame: () -> Unit){
-    Column(
-        Modifier
-            .fillMaxSize()
-            .absolutePadding(
-                10.dp,
-                10.dp,
-                10.dp, 0.dp
-            ), horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center)
-    {
-        if (state.won or state.lost) {
-            NewGameButton(newGame)
-        }
-        else {
-            TitleText("Wheel of Fortune")
-            Spacer(modifier = Modifier.height(30.dp))
-            Wheel(image = state.wheelImage)
-            Spacer(modifier = Modifier.height(30.dp))
-            Text(
-                text = state.wheelResult,
-                textAlign = TextAlign.Center,
-                fontSize = 30.sp, fontFamily = FontFamily.SansSerif
-            )
 
-            SpinButton(onClick = spinWheelFunction, enabled = state.spinnable)
-            var enabled = false
-            if (!state.spinnable) {
-                enabled = true
-            }
-            if (state.spinnable) {
-                enabled = false
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            if (!state.won && !state.lost) {
-                NextButton(onClick = navigateFunction, enabled)
-            }
-
-        }
-
-    }
-}
 @Composable
 fun TitleText(text: String){
     Text(text = text,

@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+// list of words to be drawn
 object Words {
     val places = listOf(
         "Afghanistan",
